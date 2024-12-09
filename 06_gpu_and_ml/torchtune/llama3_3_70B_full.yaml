@@ -13,7 +13,7 @@
 # you can run:
 #   tune run --nproc_per_node 8 full_finetune_distributed --config llama3_3/70B_full checkpointer.checkpoint_dir=<YOUR_CHECKPOINT_DIR>
 #
-# This config is only tested on an 8xA100 machine.
+# This config is only tested on 8xA100 and 8xH100 machines.
 #
 
 output_dir: /data/torchtune/llama3_3_70B/full
@@ -37,7 +37,7 @@ model:
 
 checkpointer:
   _component_: torchtune.training.FullModelHFCheckpointer
-  checkpoint_dir: /data/Llama-3.3-70B-Instruct/
+  checkpoint_dir: /data/torchtune/llama3_3_70B/full
   checkpoint_files:
     [
       model-00001-of-00030.safetensors,
