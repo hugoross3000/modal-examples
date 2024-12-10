@@ -16,12 +16,12 @@
 # This config is only tested on 8xA100 and 8xH100 machines.
 #
 
-output_dir: /data/torchtune/llama3_3_70B/full
+output_dir: /data/torchtune/llama3_3_70B/finetune
 
 # Tokenizer
 tokenizer:
   _component_: torchtune.models.llama3.llama3_tokenizer
-  path: /data/Llama-3.3-70B-Instruct/original/tokenizer.model
+  path: /data/torchtune/llama3_3_70B/full/original/tokenizer.model
   max_seq_len: null
 
 # Dataset

@@ -13,7 +13,9 @@ from pathlib import Path
 import modal
 
 REMOTE_CONFIG_PATH = Path("/llama3_3_70B_full.yaml")
-REMOTE_OUTPUT_DIR = Path("/data/torchtune/llama3_3_70B/full")
+REMOTE_OUTPUT_DIR = Path(  # also referenced in the config
+    "/data/torchtune/llama3_3_70B/full"
+)
 here = Path(__file__).parent
 
 app = modal.App(name="llama3-finetune")
@@ -39,9 +41,9 @@ image = (
 @app.function(
     image=image,
     volumes={"/data": volume},
-    # secrets=[  # only needed if downloading gated models
-    #     modal.Secret.from_name("huggingface-secret", required_keys=["HF_TOKEN"])
-    # ],
+    secrets=[
+        modal.Secret.from_name("huggingface-secret", required_keys=["HF_TOKEN"])
+    ],
     timeout=60 * 60,  # set defensively high, should finish in ~10 minutes
 )
 def download_model():
@@ -50,11 +52,11 @@ def download_model():
         [
             "tune",
             "download",
-            "unsloth/Llama-3.3-70B-Instruct",
+            "meta-llama/Llama-3.3-70B-Instruct",
             "--output-dir",
             REMOTE_OUTPUT_DIR.as_posix(),
             "--ignore-patterns",
-            "original/consolidated.00.pth",
+            "original/consolidated*",
         ]
     )
 
@@ -79,8 +81,10 @@ def finetune(cli_overrides: str = None):
     else:
         cli_overrides = []
 
+    volume.reload()
+
     # run a quick validation check
-    subprocess.run(["tune", "validate", "--config", REMOTE_CONFIG_PATH])
+    subprocess.run(["tune", "validate", REMOTE_CONFIG_PATH])
 
     subprocess.run(
         [
